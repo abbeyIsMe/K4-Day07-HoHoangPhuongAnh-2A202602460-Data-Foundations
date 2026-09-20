@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import csv
 import re
+import ssl
 import sys
 import time
 from datetime import date
@@ -100,6 +101,22 @@ def load_rows(path: Path) -> list[dict[str, str]]:
     return rows
 
 
+def open_with_ssl_fallback(url: str, timeout: float, user_agent: str | None = None) -> object:
+    headers = {"Accept": "text/html,text/plain;q=0.9,*/*;q=0.1"}
+    if user_agent is not None:
+        headers["User-Agent"] = user_agent
+
+    request = Request(url, headers=headers)
+    try:
+        return urlopen(request, timeout=timeout)
+    except (URLError, OSError, ssl.SSLError) as error:
+        reason = getattr(error, "reason", error)
+        message = str(reason)
+        if not (isinstance(reason, ssl.SSLError) or "CERTIFICATE_VERIFY_FAILED" in message or "self-signed certificate" in message):
+            raise
+        return urlopen(request, timeout=timeout, context=ssl._create_unverified_context())
+
+
 def robots_allowed(url: str, user_agent: str) -> bool:
     parsed = urlparse(url)
     if parsed.scheme not in {"http", "https"} or not parsed.netloc:
@@ -108,10 +125,21 @@ def robots_allowed(url: str, user_agent: str) -> bool:
     robots_url = f"{parsed.scheme}://{parsed.netloc}/robots.txt"
     parser = RobotFileParser(robots_url)
     try:
-        parser.read()
-    except (HTTPError, URLError, OSError) as error:
-        print(f"Skipping {url}: cannot verify {robots_url} ({error})", file=sys.stderr)
-        return False
+        with open_with_ssl_fallback(robots_url, timeout=20, user_agent=user_agent) as response:  # type: ignore[operator]
+            parser.parse(response.read().decode("utf-8", errors="replace").splitlines())
+    except (HTTPError, URLError, OSError, ssl.SSLError, ValueError) as error:
+        reason = getattr(error, "reason", error)
+        message = str(reason)
+        if "CERTIFICATE_VERIFY_FAILED" in message or "self-signed certificate" in message:
+            try:
+                with urlopen(Request(robots_url, headers={"User-Agent": user_agent}), timeout=20, context=ssl._create_unverified_context()) as response:
+                    parser.parse(response.read().decode("utf-8", errors="replace").splitlines())
+            except (HTTPError, URLError, OSError, ssl.SSLError, ValueError) as retry_error:
+                print(f"Skipping {url}: cannot verify {robots_url} ({retry_error})", file=sys.stderr)
+                return False
+        else:
+            print(f"Skipping {url}: cannot verify {robots_url} ({error})", file=sys.stderr)
+            return False
     if not parser.can_fetch(user_agent, url):
         print(f"Skipping {url}: disallowed by robots.txt", file=sys.stderr)
         return False
@@ -120,12 +148,24 @@ def robots_allowed(url: str, user_agent: str) -> bool:
 
 def fetch(url: str, user_agent: str, timeout: float) -> tuple[str, str]:
     request = Request(url, headers={"User-Agent": user_agent, "Accept": "text/html,text/plain;q=0.9,*/*;q=0.1"})
-    with urlopen(request, timeout=timeout) as response:  # noqa: S310 - URL is supplied by the course user.
-        content_type = response.headers.get_content_type().lower()
-        if content_type not in {"text/html", "text/plain"}:
-            raise ValueError(f"unsupported content type: {content_type}")
-        charset = response.headers.get_content_charset() or "utf-8"
-        return response.geturl(), response.read().decode(charset, errors="replace")
+    try:
+        with urlopen(request, timeout=timeout) as response:  # noqa: S310 - URL is supplied by the course user.
+            content_type = response.headers.get_content_type().lower()
+            if content_type not in {"text/html", "text/plain"}:
+                raise ValueError(f"unsupported content type: {content_type}")
+            charset = response.headers.get_content_charset() or "utf-8"
+            return response.geturl(), response.read().decode(charset, errors="replace")
+    except (URLError, OSError, ssl.SSLError) as error:
+        reason = getattr(error, "reason", error)
+        message = str(reason)
+        if not (isinstance(reason, ssl.SSLError) or "CERTIFICATE_VERIFY_FAILED" in message or "self-signed certificate" in message):
+            raise
+        with urlopen(request, timeout=timeout, context=ssl._create_unverified_context()) as response:  # type: ignore[arg-type]
+            content_type = response.headers.get_content_type().lower()
+            if content_type not in {"text/html", "text/plain"}:
+                raise ValueError(f"unsupported content type: {content_type}")
+            charset = response.headers.get_content_charset() or "utf-8"
+            return response.geturl(), response.read().decode(charset, errors="replace")
 
 
 def extract_content(body: str) -> tuple[str, str]:
