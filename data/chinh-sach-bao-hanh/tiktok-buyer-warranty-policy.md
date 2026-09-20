@@ -451,11 +451,11 @@ Trong trường hợp nào tôi phải chịu chi phí vận chuyển trả hàn
 
 Nếu lý do của khách hàng ảnh hưởng đến Tỉ lệ trả hàng và hoàn tiền do lỗi của Người bán, bạn sẽ phải chịu chi phí vận chuyển của khách hàng.
 
-Nội dung bên trên có ích với bạn không?
+Is the content above helpful?
 
-Berikutnya Trả hàng do “Đổi ý”
+Next Trả hàng do “Đổi ý”
 
-Mục lục
+Table of contents
 
 Tổng quan về Thời gian & Quy trình Trả hàng/Hoàn tiền
 

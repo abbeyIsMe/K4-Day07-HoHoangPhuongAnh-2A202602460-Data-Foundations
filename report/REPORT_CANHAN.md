@@ -107,22 +107,26 @@ Kết quả thực tế:
 
 ## 5. Kết quả truy xuất của tôi (Competition Results) — Cá nhân (10 điểm)
 
-Chạy **5 câu hỏi đánh giá của nhóm** trên mã nguồn cá nhân của bạn trong gói `src`. **5 câu hỏi này phải trùng với các thành viên cùng nhóm** (xem `REPORT_NHOM.md`).
+Tôi chạy benchmark trên bộ dữ liệu R2 đã chuẩn hóa để phù hợp với prompt của lab: 4 tài liệu trong `data/ecommerce/` với metadata rõ ràng theo `platform`, `audience`, `category`.
 
-Vì phần benchmark nhóm cần được tổ chức và ghi trong báo cáo nhóm, tôi đã hoàn thành phần kỹ thuật của code và đảm bảo pipeline retrieval hoạt động đúng; phần benchmark cụ thể sẽ được cập nhật trong báo cáo nhóm theo cùng 5 câu hỏi của nhóm. Dưới đây là bộ câu hỏi dự tính và mục tiêu truy xuất tương ứng:
+Bộ benchmark này tập trung vào hai nền tảng thương mại điện tử chính: TikTok Shop và Shopee. Tôi thực hiện retrieval theo đúng thứ tự: filter metadata trước → search → kiểm tra top-k với gold answer.
 
-| # | Câu hỏi (Query) | Top-1 Chunk truy xuất được (tóm tắt) | Điểm Score | Có liên quan không? (Relevant) | Câu trả lời của Agent (tóm tắt) |
-|---|-------|--------------------------------|-------|-----------|------------------------|
-| 1 | Người mua có bao nhiêu ngày để đổi trả? | Thông tin về thời hạn đổi trả cho người mua | dự kiến cao | Có | Trả lời theo thời hạn mãn hạn/điều kiện đổi trả |
-| 2 | Người bán cần xử lý khiếu nại trong bao lâu? | Quy định xử lý của người bán và thời hạn phản hồi | dự kiến cao | Có | Trả lời về thời gian xử lý yêu cầu |
-| 3 | Ai chịu chi phí vận chuyển đổi trả? | Thông tin về đối tượng chịu phí | dự kiến cao | Có | Trả lời theo chính sách người mua/người bán |
-| 4 | Điều kiện nào không được đổi trả? | Điều kiện ngoại trừ và hạn chế | dự kiến trung bình | Có | Chỉ rõ điều kiện ngoại lệ |
-| 5 | Nếu sản phẩm lỗi kỹ thuật thì xử lý như thế nào? | Chính sách bảo hành hoặc đổi mới | dự kiến cao | Có | Giải thích quyền lợi và quy trình |
+| # | Câu hỏi (Query) | Nền tảng / đối tượng | Source thực tế | Kết luận |
+|---|-------|--------------------|----------------|-----------|
+| 1 | Người bán TikTok Shop phải xem xét yêu cầu trong bao lâu? | `tiktok_shop`, `seller`, `return_refund` | `tiktok-shop-return-refund-seller.md` | Top-1 / top-k phải chứa thông tin 1 ngày theo lịch và phê duyệt tự động nếu không xử lý đúng hạn |
+| 2 | Sau khi yêu cầu trả hàng được phê duyệt, người mua có bao nhiêu ngày để gửi hàng trả? | `tiktok_shop`, `seller`, `return_refund` | `tiktok-shop-return-refund-seller.md` | Top-1 / top-k phải chứa 10 ngày theo lịch; trễ thì yêu cầu đóng và không hoàn tiền |
+| 3 | Hoàn tiền toàn bộ khác hoàn tiền một phần ở điểm nào? | `tiktok_shop`, `seller`, `return_refund` | `tiktok-shop-refund-proposal-seller.md` | Top-1 / top-k cần nêu rõ hoàn toàn bộ chặn yêu cầu tiếp theo, hoàn một phần vẫn cho phép tiếp tục hậu mãi |
+| 4 | Người bán Shopee có trách nhiệm gì và hiểu điều kiện bảo hành như thế nào? | `shopee`, `both`, `warranty` | `shopee-warranty-policy-both.md` | Top-1 / top-k phải nhấn mạnh trách nhiệm tiếp nhận bảo hành và 3 điều kiện cơ bản |
+| 5 | Khi yêu cầu trả hàng/hoàn tiền trên Shopee được xử lý trong bao lâu? | `shopee`, `buyer`, `return_refund` | `shopee-return-refund-guide-buyer.md` | Top-1 / top-k phải chứa 3–5 ngày làm việc và hoàn tiền 1–14 ngày làm việc |
 
-**Bao nhiêu câu hỏi trả về chunk có liên quan trong top-3?** 5 / 5 (dự kiến khi benchmark nhóm được thực thi đúng với dữ liệu đã phân loại theo audience)
+**Tại sao phải sửa dữ liệu cũ?**
+> Vì bộ benchmark được cho sẵn tác dụng trên `platform = tiktok_shop / shopee`, còn các file cũ như Thế Giới Di Động, FPT Shop, GearVN thuộc chủ đề tương tự nhưng không khớp với gold answer đã định sẵn. Nếu giữ nguyên bộ data cũ, retrieval có thể trả về tài liệu đúng chủ đề nhưng sai nền tảng và sai audience; lúc đó agent sẽ trả lời lệch với benchmark mặc dù “có vẻ liên quan”.
 
-**Điều hay nhất tôi học được từ thành viên khác / nhóm khác (qua demo):**
-> Trong retrieval, metadata filter có tác dụng cực lớn khi dữ liệu chứa nhiều đối tượng khác nhau như người mua và người bán. Nếu không phân biệt audience, retrieval dễ lẫn giữa các chính sách và trả lời lệch đối tượng. Điều đó cho thấy dữ liệu tốt và metadata rõ ràng quan trọng hơn cả việc nâng cấp model một cách mù quáng.
+**Tại sao metadata filter lại quan trọng?**
+> Dữ liệu chính sách thương mại điện tử có cùng chủ đề nhưng khác đối tượng (người mua/người bán) và khác nền tảng. Nếu không filter bằng `audience` và `platform`, hệ thống có thể dùng đúng từ khóa nhưng lại lấy tài liệu sai đối tượng, dẫn đến câu trả lời sai dù top-k nhìn có vẻ “liên quan”.
+
+**Điều hay nhất tôi học được từ quá trình chỉnh sửa dữ liệu và benchmark:**
+> Retrieval không chỉ cần từ khóa matching; nó cần dữ liệu đúng mục tiêu, metadata đúng và gold answer phải khớp với chính corpus. Khi sai một trong ba phần này, câu trả lời sẽ “trông hợp lý” nhưng thực chất lệch benchmark.
 
 ---
 

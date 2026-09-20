@@ -66,11 +66,11 @@ Nếu bạn bắt đầu hoàn tiền một phần, khách hàng vẫn có thể
 Nếu tôi hoàn tiền toàn bộ hoặc một phần cho khách hàng, đơn hàng đó có bị tính là SFRR (Tỷ lệ trả hàng/hoàn tiền do lỗi của người bán) không?
 Không. Nếu bạn chủ động hoàn tiền mà không có yêu cầu từ người mua, đơn hàng sẽ không bị tính là SFRR.
 
-Adakah kandungan di atas berguna?
+Apakah konten di atas berguna?
 
-SebelumnyaCài đặt quy tắc tự động cho Hoàn tiền không cần trả hàng Seterusnya Thương lượng với người mua
+SebelumnyaCài đặt quy tắc tự động cho Hoàn tiền không cần trả hàngBerikutnya Thương lượng với người mua
 
-Jadual kandungan
+Daftar isi
 
 Cách đề nghị hoàn tiền cho người mua
 
