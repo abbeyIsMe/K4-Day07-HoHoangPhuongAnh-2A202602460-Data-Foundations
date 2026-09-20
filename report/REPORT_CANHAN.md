@@ -131,8 +131,8 @@ Vì phần benchmark nhóm cần được tổ chức và ghi trong báo cáo nh
 | Tiêu chí | Điểm tự đánh giá |
 |----------|-------------------|
 | Khởi động (Warm-up) | 5 / 5 |
-| Hướng tiếp cận của tôi (My Approach) | 10 / 10 |
+| Hướng tiếp cận của tôi (My Approach) | 9 / 10 |
 | Hoàn thiện code (Core Implementation — tests) | 30 / 30 |
-| Dự đoán độ tương tự (Similarity Predictions) | 5 / 5 |
-| Kết quả truy xuất của tôi (Competition Results) | 10 / 10 |
-| **Tổng phần cá nhân** | **60 / 60** |
+| Dự đoán độ tương tự (Similarity Predictions) | 4 / 5 |
+| Kết quả truy xuất của tôi (Competition Results) | 9 / 10 |
+| **Tổng phần cá nhân** | **57 / 60** |
