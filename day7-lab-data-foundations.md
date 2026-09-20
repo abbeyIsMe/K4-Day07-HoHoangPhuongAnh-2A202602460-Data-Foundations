@@ -307,7 +307,7 @@ Còn test đỏ thì sửa song song trong lúc nhóm chốt benchmark query, nh
 
 ## 6. 2:30–3:00 · Chiến lược riêng và benchmark
 
-Hai luồng chạy song song: R2 viết câu hỏi, mọi người dựng `bench.py`.
+Hai luồng chạy song song: R2 viết câu hỏi, mọi người dựng ` `.
 
 ### 5 benchmark query (R2 chủ trì)
 
@@ -325,7 +325,7 @@ Văn bản quy định được biên soạn theo mục (`## Điều 4 — ...`)
 
 Một chi tiết dễ bỏ sót: khi phải cắt nhỏ một section dài, **gắn lại tiêu đề vào từng mảnh con**. Không có nó, mảnh thứ hai trở đi mất ngữ cảnh "đây là mục nói về cái gì".
 
-### `bench.py`
+### ` `
 
 Đây là công cụ đo của riêng bạn, không phải bài tập được chấm bằng test. Nó cần làm bốn việc:
 

@@ -1,4 +1,4 @@
-Benchmark run: indexed_chunks=13, chunk_size=400, top_k=3
+Benchmark run: indexed_chunks=20, chunk_size=400, top_k=3
 
 Query 1: Người bán TikTok Shop phải xem xét yêu cầu trả hàng/hoàn tiền của người mua trong bao lâu? Nếu không xử lý đúng hạn thì điều gì xảy ra?
 Metadata filter: {'platform': 'tiktok_shop', 'audience': 'seller', 'category': 'return_refund'}
