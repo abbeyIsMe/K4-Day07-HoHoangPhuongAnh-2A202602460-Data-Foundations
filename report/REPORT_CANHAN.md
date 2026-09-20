@@ -33,9 +33,9 @@
 ### Bài toán tính toán Chunking (Bài tập 1.2)
 
 **Tài liệu 10,000 ký tự, chunk_size=500, overlap=50. Bao nhiêu chunks?**
-> Bước nhảy (step) là `chunk_size - overlap = 500 - 50 = 450`.
-> Số chunk được tính theo công thức: `1 + ceil((N - chunk_size) / step)`.
-> Với `N = 10000`, ta có `1 + ceil((10000 - 500) / 450) = 1 + ceil(9500 / 450) = 1 + ceil(21.11) = 1 + 22 = 23`.
+> Bước nhảy (step) là chunk_size - overlap = 500 - 50 = 450.
+> Số chunk được tính theo công thức: 1 + ceil((N - chunk_size) / step).
+> Với N = 10000, ta có 1 + ceil((10000 - 500) / 450) = 1 + ceil(9500 / 450) = 1 + ceil(21.11) = 1 + 22 = 23.
 > **Đáp án: 23 chunks**.
 
 **Nếu độ chồng chéo (overlap) tăng lên 100, số lượng chunk thay đổi thế nào? Tại sao muốn độ chồng chéo nhiều hơn?**
@@ -50,10 +50,10 @@ Giải thích cách tiếp cận của bạn khi lập trình (implement) các p
 ### Các hàm chia nhỏ (Chunking Functions)
 
 **`SentenceChunker.chunk`** — hướng tiếp cận:
-> Tôi tách văn bản theo ranh giới câu bằng regex trên dấu kết thúc câu như `. `, `! `, `? ` và xuống dòng. Sau đó gom mỗi nhóm `max_sentences_per_chunk` câu thành một chunk và strip khoảng trắng thừa. Edge case quan trọng là văn bản rỗng hoặc các câu bị lặp khoảng trắng; tôi xử lý bằng kiểm tra `if not text` và lọc phần trống trước khi trả về.
+> Tách văn bản theo ranh giới câu bằng regex trên dấu kết thúc câu như `. `, `! `, `? ` và xuống dòng. Sau đó gom mỗi nhóm `max_sentences_per_chunk` câu thành một chunk và strip khoảng trắng thừa. Edge case quan trọng là văn bản rỗng hoặc các câu bị lặp khoảng trắng; tôi xử lý bằng kiểm tra `if not text` và lọc phần trống trước khi trả về.
 
 **`RecursiveChunker.chunk` / `_split`** — hướng tiếp cận:
-> Tôi dùng cách đệ quy theo thứ tự separator ưu tiên: `\n\n`, `\n`, `. `, ` `, `""`. Nếu đoạn văn còn quá dài sau khi chia theo separator hiện tại, tôi gọi lại đệ quy với danh sách separator còn lại. Base case là khi độ dài đoạn nhỏ hơn hoặc bằng `chunk_size`, hoặc khi không còn separator thì cắt cứng theo `chunk_size` để tránh vòng lặp vô hạn.
+> Dùng cách đệ quy theo thứ tự separator ưu tiên: `\n\n`, `\n`, `. `, ` `, `""`. Nếu đoạn văn còn quá dài sau khi chia theo separator hiện tại, tôi gọi lại đệ quy với danh sách separator còn lại. Base case là khi độ dài đoạn nhỏ hơn hoặc bằng `chunk_size`, hoặc khi không còn separator thì cắt cứng theo `chunk_size` để tránh vòng lặp vô hạn.
 
 ### Lớp EmbeddingStore
 
@@ -61,7 +61,7 @@ Giải thích cách tiếp cận của bạn khi lập trình (implement) các p
 > Mỗi document được chuẩn hóa thành record với `content`, `metadata`, và `embedding`. Khi search, tôi nhúng query rồi tính dot product với từng embedding đã lưu, sắp xếp giảm dần theo score. Cách này là đúng với mô hình vector store đơn giản và phù hợp với các test của lab vì mock embeddings đã chuẩn hóa vector.
 
 **`search_with_filter` + `delete_document`** — hướng tiếp cận:
-> Tôi ưu tiên lọc metadata trước khi chạy similarity search. Điều này đảm bảo `search_with_filter` không lãng phí các chỉ số top-k vào các document không hợp lệ. Với delete, tôi xoá toàn bộ record có `metadata['doc_id'] == doc_id` và trả về `True` nếu có ít nhất một record bị xóa.
+> Ưu tiên lọc metadata trước khi chạy similarity search. Điều này đảm bảo `search_with_filter` không lãng phí các chỉ số top-k vào các document không hợp lệ. Với delete, tôi xoá toàn bộ record có `metadata['doc_id'] == doc_id` và trả về `True` nếu có ít nhất một record bị xóa.
 
 ### Tác tử KnowledgeBaseAgent
 
@@ -107,9 +107,9 @@ Kết quả thực tế:
 
 ## 5. Kết quả truy xuất của tôi (Competition Results) — Cá nhân (10 điểm)
 
-Tôi chạy benchmark trên bộ dữ liệu R2 đã chuẩn hóa để phù hợp với prompt của lab: 4 tài liệu trong `data/ecommerce/` với metadata rõ ràng theo `platform`, `audience`, `category`.
+Chạy benchmark trên bộ dữ liệu R2 đã chuẩn hóa để phù hợp với prompt của lab: 4 tài liệu trong `data/ecommerce/` với metadata rõ ràng theo `platform`, `audience`, `category`.
 
-Bộ benchmark này tập trung vào hai nền tảng thương mại điện tử chính: TikTok Shop và Shopee. Tôi thực hiện retrieval theo đúng thứ tự: filter metadata trước → search → kiểm tra top-k với gold answer.
+Bộ benchmark này tập trung vào hai nền tảng thương mại điện tử chính: TikTok Shop và Shopee. Thực hiện retrieval theo đúng thứ tự: filter metadata trước → search → kiểm tra top-k với gold answer.
 
 | # | Câu hỏi (Query) | Nền tảng / đối tượng | Source thực tế | Kết luận |
 |---|-------|--------------------|----------------|-----------|
